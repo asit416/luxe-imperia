@@ -1,0 +1,264 @@
+{% comment %}
+  SECTION: featured-collections.liquid
+  LOCATION: sections/featured-collections.liquid
+  USAGE: Add on homepage to showcase 2–4 categories.
+  Link each block to a collection in your Shopify store.
+{% endcomment %}
+
+<style>
+.collections-section {
+  padding: var(--section-pad-v) 0;
+  background: var(--c-white);
+}
+.collections-header {
+  text-align: center;
+  padding: 0 var(--section-pad-h);
+  margin-bottom: clamp(48px, 6vw, 80px);
+}
+.collections-eyebrow {
+  font-family: var(--font-ui);
+  font-size: 0.6rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--c-warm-gray);
+  margin-bottom: 16px;
+}
+.collections-heading {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 4vw, 4rem);
+  font-weight: 300;
+  line-height: 1.15;
+  color: var(--c-black);
+}
+.collections-heading em {
+  font-style: italic;
+  color: var(--c-gold);
+}
+
+/* Grid */
+.collections-grid {
+  display: grid;
+  padding: 0 var(--section-pad-h);
+  gap: clamp(12px, 2vw, 24px);
+}
+.collections-grid[data-count="2"] { grid-template-columns: repeat(2, 1fr); }
+.collections-grid[data-count="3"] { grid-template-columns: repeat(3, 1fr); }
+.collections-grid[data-count="4"] { grid-template-columns: repeat(4, 1fr); }
+
+@media (max-width: 900px) {
+  .collections-grid[data-count="4"] { grid-template-columns: repeat(2, 1fr); }
+  .collections-grid[data-count="3"] { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 540px) {
+  .collections-grid[data-count="2"],
+  .collections-grid[data-count="3"],
+  .collections-grid[data-count="4"] { grid-template-columns: 1fr; }
+}
+
+/* Collection card */
+.collection-card {
+  position: relative;
+  overflow: hidden;
+  display: block;
+  background: var(--c-beige);
+  aspect-ratio: {{ section.settings.card_ratio | default: '3/4' }};
+}
+
+/* First card taller on 4-grid */
+.collections-grid[data-count="4"] .collection-card:first-child {
+  grid-row: span 2;
+  aspect-ratio: unset;
+}
+
+.collection-card__img {
+  position: absolute; inset: 0;
+  transition: transform 0.9s var(--ease-luxury);
+}
+.collection-card:hover .collection-card__img img {
+  transform: scale(1.07);
+}
+.collection-card__img img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  transition: transform 0.9s var(--ease-luxury);
+  display: block;
+}
+
+/* Gradient overlay */
+.collection-card::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(
+    180deg,
+    transparent 40%,
+    rgba(0,0,0,0.1) 65%,
+    rgba(0,0,0,0.55) 100%
+  );
+  z-index: 1;
+  transition: opacity 0.5s;
+}
+.collection-card:hover::after {
+  background: linear-gradient(
+    180deg,
+    transparent 30%,
+    rgba(0,0,0,0.15) 60%,
+    rgba(0,0,0,0.65) 100%
+  );
+}
+
+/* Info */
+.collection-card__info {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  z-index: 2;
+  padding: clamp(20px, 4%, 40px);
+  transform: translateY(8px);
+  transition: transform 0.5s var(--ease-luxury);
+}
+.collection-card:hover .collection-card__info {
+  transform: translateY(0);
+}
+.collection-card__subtitle {
+  font-family: var(--font-ui);
+  font-size: 0.58rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.6);
+  margin-bottom: 8px;
+  transition: color 0.3s;
+}
+.collection-card__name {
+  font-family: var(--font-display);
+  font-size: clamp(1.6rem, 2.5vw, 2.6rem);
+  font-weight: 300;
+  line-height: 1.1;
+  color: var(--c-white);
+  margin-bottom: 20px;
+  letter-spacing: 0.02em;
+}
+.collection-card__cta {
+  font-family: var(--font-ui);
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.7);
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding-bottom: 2px;
+  border-bottom: 1px solid rgba(255,255,255,0.4);
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.4s 0.05s, transform 0.4s 0.05s, color 0.3s, border-color 0.3s;
+}
+.collection-card:hover .collection-card__cta {
+  opacity: 1; transform: translateY(0);
+}
+.collection-card__cta:hover {
+  color: var(--c-white);
+  border-color: var(--c-white);
+}
+.collection-card__cta svg { transition: transform 0.3s; }
+.collection-card__cta:hover svg { transform: translateX(5px); }
+
+/* Placeholder for editor */
+.collection-card__placeholder {
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, var(--c-beige-dark), var(--c-beige));
+}
+</style>
+
+<section class="collections-section" id="collections">
+  <div class="collections-header">
+    {% if section.settings.eyebrow != blank %}
+      <p class="collections-eyebrow fade-up" data-scroll-reveal>{{ section.settings.eyebrow }}</p>
+    {% endif %}
+    {% if section.settings.heading != blank %}
+      <h2 class="collections-heading fade-up delay-1" data-scroll-reveal>
+        {{ section.settings.heading }}
+      </h2>
+    {% endif %}
+  </div>
+
+  <div class="collections-grid fade-up delay-2" data-scroll-reveal data-count="{{ section.blocks.size }}">
+    {% for block in section.blocks %}
+      {%- assign collection = collections[block.settings.collection] -%}
+      <a class="collection-card"
+         href="{% if block.settings.url != blank %}{{ block.settings.url }}{% elsif collection != blank %}/collections/{{ collection.handle }}{% else %}/collections{% endif %}"
+         {{ block.shopify_attributes }}>
+
+        <div class="collection-card__img">
+          {% if block.settings.image != blank %}
+            <img src="{{ block.settings.image | img_url: '900x' }}"
+                 srcset="{{ block.settings.image | img_url: '600x' }} 600w,
+                         {{ block.settings.image | img_url: '900x' }} 900w"
+                 sizes="(max-width: 540px) 100vw, (max-width: 900px) 50vw, 25vw"
+                 alt="{{ block.settings.image.alt | default: block.settings.name }}"
+                 loading="lazy">
+          {% elsif collection.image != blank %}
+            <img src="{{ collection.image | img_url: '900x' }}"
+                 alt="{{ collection.title }}"
+                 loading="lazy">
+          {% else %}
+            <div class="collection-card__placeholder"></div>
+          {% endif %}
+        </div>
+
+        <div class="collection-card__info">
+          {% if block.settings.subtitle != blank %}
+            <p class="collection-card__subtitle">{{ block.settings.subtitle }}</p>
+          {% endif %}
+          <h3 class="collection-card__name">
+            {{ block.settings.name | default: collection.title | default: 'Collection' }}
+          </h3>
+          <span class="collection-card__cta">
+            Explore
+            <svg width="16" height="10" viewBox="0 0 16 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M0 5H15M15 5L11 1M15 5L11 9" stroke="currentColor" stroke-width="1"/>
+            </svg>
+          </span>
+        </div>
+      </a>
+    {% endfor %}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Featured Collections",
+  "settings": [
+    { "type": "text", "id": "eyebrow",  "label": "Eyebrow text", "default": "Curated for You" },
+    { "type": "text", "id": "heading",  "label": "Section heading", "default": "Explore the Collections" },
+    { "type": "select", "id": "card_ratio", "label": "Card aspect ratio",
+      "options": [
+        {"value":"2/3",  "label":"2:3 (Portrait)"},
+        {"value":"3/4",  "label":"3:4 (Tall)"},
+        {"value":"1/1",  "label":"1:1 (Square)"},
+        {"value":"4/3",  "label":"4:3 (Landscape)"}
+      ], "default": "3/4" }
+  ],
+  "blocks": [
+    {
+      "type": "collection_card",
+      "name": "Collection",
+      "settings": [
+        { "type": "collection",   "id": "collection", "label": "Collection (auto-links)" },
+        { "type": "image_picker", "id": "image",      "label": "Override image" },
+        { "type": "text",         "id": "name",       "label": "Collection name",    "default": "Women" },
+        { "type": "text",         "id": "subtitle",   "label": "Subtitle / season",  "default": "New Arrivals" },
+        { "type": "url",          "id": "url",        "label": "Override URL" }
+      ]
+    }
+  ],
+  "max_blocks": 4,
+  "presets": [{
+    "name": "Featured Collections",
+    "blocks": [
+      {"type": "collection_card", "settings": {"name": "Women",       "subtitle": "New Season"}},
+      {"type": "collection_card", "settings": {"name": "Men",         "subtitle": "New Season"}},
+      {"type": "collection_card", "settings": {"name": "Accessories", "subtitle": "Highlights"}},
+      {"type": "collection_card", "settings": {"name": "Shoes",       "subtitle": "New Arrivals"}}
+    ]
+  }]
+}
+{% endschema %}

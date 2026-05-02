@@ -1,0 +1,377 @@
+{%- liquid
+  assign collection = collections[section.settings.collection]
+  assign products_to_show = section.settings.products_to_show | default: 4
+  assign per_row = section.settings.columns | default: 4
+-%}
+
+<section class="featured-collection" style="background:{{ section.settings.background_color }};">
+  <div class="container">
+
+    {%- if section.settings.title != blank or section.settings.subtitle != blank -%}
+      <div class="featured-collection__header reveal">
+        {%- if section.settings.eyebrow != blank -%}
+          <p class="section-eyebrow">{{ section.settings.eyebrow }}</p>
+        {%- endif -%}
+        {%- if section.settings.title != blank -%}
+          <h2 class="featured-collection__title">{{ section.settings.title }}</h2>
+        {%- endif -%}
+        {%- if section.settings.subtitle != blank -%}
+          <p class="featured-collection__subtitle">{{ section.settings.subtitle }}</p>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    <div class="product-grid product-grid--{{ per_row }}-col">
+      {%- if collection != blank and collection.products.size > 0 -%}
+        {%- for product in collection.products limit: products_to_show -%}
+          <div class="product-card reveal reveal-delay-{{ forloop.index | modulo: 4 | plus: 1 }}">
+            <a href="{{ product.url }}" class="product-card__link" aria-label="{{ product.title | escape }}">
+
+              <!-- Product image with hover swap -->
+              <div class="product-card__media">
+                {%- if product.featured_image != blank -%}
+                  <img class="product-card__image product-card__image--primary"
+                       src="{{ product.featured_image | image_url: width: 800 }}"
+                       srcset="{{ product.featured_image | image_url: width: 400 }} 400w,
+                               {{ product.featured_image | image_url: width: 800 }} 800w"
+                       sizes="(max-width: 768px) 50vw, 25vw"
+                       alt="{{ product.featured_image.alt | default: product.title | escape }}"
+                       loading="lazy"
+                       width="{{ product.featured_image.width }}"
+                       height="{{ product.featured_image.height }}">
+                  {%- if product.images[1] != blank -%}
+                    <img class="product-card__image product-card__image--secondary"
+                         src="{{ product.images[1] | image_url: width: 800 }}"
+                         srcset="{{ product.images[1] | image_url: width: 400 }} 400w,
+                                 {{ product.images[1] | image_url: width: 800 }} 800w"
+                         sizes="(max-width: 768px) 50vw, 25vw"
+                         alt="{{ product.images[1].alt | default: product.title | escape }}"
+                         loading="lazy"
+                         aria-hidden="true">
+                  {%- endif -%}
+                {%- else -%}
+                  <div class="product-card__placeholder">
+                    {{ 'product-1' | placeholder_svg_tag: 'product-card__placeholder-svg' }}
+                  </div>
+                {%- endif -%}
+
+                <!-- Quick action -->
+                <div class="product-card__actions">
+                  <button class="product-card__wishlist" aria-label="Add to wishlist" 
+                          data-product-id="{{ product.id }}">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
+                      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                    </svg>
+                  </button>
+                </div>
+
+                {%- if product.available == false -%}
+                  <span class="product-card__badge product-card__badge--unavailable">Sold Out</span>
+                {%- endif -%}
+              </div>
+
+              <!-- Product info -->
+              <div class="product-card__info">
+                {%- if section.settings.show_vendor and product.vendor != blank -%}
+                  <p class="product-card__vendor">{{ product.vendor }}</p>
+                {%- endif -%}
+                <h3 class="product-card__title">{{ product.title }}</h3>
+                {%- if section.settings.show_price -%}
+                  <p class="product-card__price">
+                    {%- if product.price_varies -%}
+                      <span class="price-from">From </span>
+                    {%- endif -%}
+                    <span class="price-amount">{{ product.price | money }}</span>
+                  </p>
+                {%- endif -%}
+              </div>
+
+            </a>
+          </div>
+        {%- endfor -%}
+      {%- else -%}
+        <!-- Placeholder products for theme editor preview -->
+        {%- for i in (1..products_to_show) -%}
+          <div class="product-card reveal reveal-delay-{{ forloop.index | modulo: 4 | plus: 1 }}">
+            <div class="product-card__media">
+              <div class="product-card__placeholder">
+                {{ 'product-1' | placeholder_svg_tag: 'product-card__placeholder-svg' }}
+              </div>
+            </div>
+            <div class="product-card__info">
+              <h3 class="product-card__title">Luxury Item {{ i }}</h3>
+              <p class="product-card__price">{{ 1200 | times: i | money }}</p>
+            </div>
+          </div>
+        {%- endfor -%}
+      {%- endif -%}
+    </div>
+
+    {%- if section.settings.show_cta and section.settings.cta_label != blank -%}
+      <div class="featured-collection__footer reveal">
+        <a href="{{ collection.url | default: '/collections/all' }}"
+           class="btn-luxury btn-luxury--dark">
+          {{ section.settings.cta_label }}
+        </a>
+      </div>
+    {%- endif -%}
+
+  </div>
+</section>
+
+<style>
+  /* ============================================
+     FEATURED COLLECTION — PRODUCT GRID
+  ============================================ */
+  .featured-collection {
+    padding: 100px 0;
+  }
+
+  .featured-collection__header {
+    text-align: center;
+    margin-bottom: 64px;
+  }
+
+  .section-eyebrow {
+    font-family: var(--font-sans);
+    font-size: 9px;
+    font-weight: 400;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--color-mid-grey);
+    margin-bottom: 16px;
+  }
+
+  .featured-collection__title {
+    font-family: var(--font-serif);
+    font-size: clamp(32px, 3.5vw, 56px);
+    font-weight: 300;
+    letter-spacing: 0.03em;
+    margin-bottom: 16px;
+  }
+
+  .featured-collection__subtitle {
+    font-size: 12px;
+    color: var(--color-text-muted);
+    letter-spacing: 0.08em;
+    max-width: 480px;
+    margin: 0 auto;
+  }
+
+  /* Product Grid */
+  .product-grid {
+    display: grid;
+    gap: 32px 24px;
+  }
+
+  .product-grid--4-col { grid-template-columns: repeat(4, 1fr); }
+  .product-grid--3-col { grid-template-columns: repeat(3, 1fr); }
+  .product-grid--2-col { grid-template-columns: repeat(2, 1fr); }
+
+  /* Product Card */
+  .product-card {
+    position: relative;
+  }
+
+  .product-card__link {
+    display: block;
+    color: inherit;
+  }
+
+  .product-card__link:hover { opacity: 1; }
+
+  /* Media container */
+  .product-card__media {
+    position: relative;
+    overflow: hidden;
+    background: var(--color-cream);
+    aspect-ratio: 3/4;
+  }
+
+  .product-card__image {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: opacity var(--transition-slow), transform var(--transition-slow);
+  }
+
+  .product-card__image--primary {
+    z-index: 1;
+    opacity: 1;
+  }
+
+  .product-card__image--secondary {
+    z-index: 2;
+    opacity: 0;
+    transform: scale(1.04);
+  }
+
+  .product-card:hover .product-card__image--primary {
+    transform: scale(1.04);
+  }
+
+  .product-card:hover .product-card__image--secondary {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  .product-card__placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-cream);
+  }
+
+  .product-card__placeholder-svg {
+    width: 60%;
+    height: 60%;
+    opacity: 0.25;
+  }
+
+  /* Hover actions */
+  .product-card__actions {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    z-index: 5;
+    opacity: 0;
+    transform: translateX(8px);
+    transition: opacity var(--transition-med), transform var(--transition-med);
+  }
+
+  .product-card:hover .product-card__actions {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  .product-card__wishlist {
+    width: 36px;
+    height: 36px;
+    background: var(--color-white);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-black);
+    transition: background var(--transition-fast), color var(--transition-fast);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+
+  .product-card__wishlist:hover {
+    background: var(--color-black);
+    color: var(--color-white);
+  }
+
+  .product-card__badge {
+    position: absolute;
+    bottom: 12px;
+    left: 12px;
+    z-index: 5;
+    font-family: var(--font-sans);
+    font-size: 8px;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    padding: 6px 12px;
+    background: var(--color-white);
+    color: var(--color-black);
+  }
+
+  .product-card__badge--unavailable {
+    background: var(--color-black);
+    color: var(--color-white);
+  }
+
+  /* Product info */
+  .product-card__info {
+    padding: 16px 0;
+  }
+
+  .product-card__vendor {
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--color-mid-grey);
+    margin-bottom: 6px;
+  }
+
+  .product-card__title {
+    font-family: var(--font-serif);
+    font-size: 16px;
+    font-weight: 300;
+    letter-spacing: 0.02em;
+    margin-bottom: 6px;
+    color: var(--color-text);
+    transition: color var(--transition-fast);
+  }
+
+  .product-card:hover .product-card__title {
+    color: var(--color-gold);
+  }
+
+  .product-card__price {
+    font-family: var(--font-sans);
+    font-size: 12px;
+    font-weight: 300;
+    letter-spacing: 0.08em;
+    color: var(--color-text-muted);
+  }
+
+  .price-from {
+    font-style: italic;
+  }
+
+  /* Footer CTA */
+  .featured-collection__footer {
+    text-align: center;
+    margin-top: 64px;
+  }
+
+  /* Responsive */
+  @media (max-width: 1200px) {
+    .product-grid--4-col { grid-template-columns: repeat(3, 1fr); }
+  }
+
+  @media (max-width: 900px) {
+    .product-grid--4-col,
+    .product-grid--3-col { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  @media (max-width: 480px) {
+    .product-grid--4-col,
+    .product-grid--3-col,
+    .product-grid--2-col { grid-template-columns: repeat(2, 1fr); gap: 20px 12px; }
+    .featured-collection { padding: 64px 0; }
+    .featured-collection__header { margin-bottom: 40px; }
+    .product-card__actions { opacity: 1; transform: none; }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Featured Collection",
+  "tag": "section",
+  "settings": [
+    {"type":"color","id":"background_color","label":"Background color","default":"#fafaf8"},
+    {"type":"text","id":"eyebrow","label":"Eyebrow text"},
+    {"type":"text","id":"title","label":"Section title","default":"New Arrivals"},
+    {"type":"text","id":"subtitle","label":"Section subtitle"},
+    {"type":"collection","id":"collection","label":"Collection"},
+    {"type":"range","id":"products_to_show","label":"Products to show","min":2,"max":12,"step":1,"default":4},
+    {"type":"select","id":"columns","label":"Columns (desktop)","options":[
+      {"value":"2","label":"2"},
+      {"value":"3","label":"3"},
+      {"value":"4","label":"4"}
+    ],"default":"4"},
+    {"type":"checkbox","id":"show_vendor","label":"Show vendor","default":false},
+    {"type":"checkbox","id":"show_price","label":"Show price","default":true},
+    {"type":"checkbox","id":"show_cta","label":"Show view all button","default":true},
+    {"type":"text","id":"cta_label","label":"View all button label","default":"View All"}
+  ],
+  "presets": [{"name":"Featured Collection"}]
+}
+{% endschema %}

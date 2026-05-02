@@ -1,0 +1,247 @@
+<section class="editorial-campaign editorial-campaign--{{ section.settings.layout }}" 
+         style="background:{{ section.settings.background_color }};">
+  <div class="editorial-campaign__inner">
+
+    <div class="editorial-campaign__media reveal">
+      {%- if section.settings.image != blank -%}
+        <div class="editorial-campaign__image-wrap">
+          <img src="{{ section.settings.image | image_url: width: 1600 }}"
+               srcset="{{ section.settings.image | image_url: width: 768 }} 768w,
+                       {{ section.settings.image | image_url: width: 1200 }} 1200w,
+                       {{ section.settings.image | image_url: width: 1600 }} 1600w"
+               sizes="(max-width: 768px) 100vw, 60vw"
+               alt="{{ section.settings.title | escape }}"
+               loading="lazy">
+        </div>
+      {%- else -%}
+        <div class="editorial-campaign__image-wrap editorial-campaign__placeholder">
+          {{ 'lifestyle-2' | placeholder_svg_tag: 'placeholder-svg' }}
+        </div>
+      {%- endif -%}
+    </div>
+
+    <div class="editorial-campaign__content reveal reveal-delay-2">
+      {%- if section.settings.collection_label != blank -%}
+        <p class="editorial-campaign__collection-label">{{ section.settings.collection_label }}</p>
+      {%- endif -%}
+      {%- if section.settings.title != blank -%}
+        <h2 class="editorial-campaign__title">{{ section.settings.title }}</h2>
+      {%- endif -%}
+      {%- if section.settings.description != blank -%}
+        <p class="editorial-campaign__description">{{ section.settings.description }}</p>
+      {%- endif -%}
+      <div class="editorial-campaign__ctas">
+        {%- if section.settings.cta_label != blank -%}
+          <a href="{{ section.settings.cta_url }}"
+             class="btn-luxury btn-luxury--dark">
+            {{ section.settings.cta_label }}
+          </a>
+        {%- endif -%}
+        {%- if section.settings.cta_secondary_label != blank -%}
+          <a href="{{ section.settings.cta_secondary_url }}" class="editorial-campaign__secondary-cta">
+            {{ section.settings.cta_secondary_label }}
+            <span class="cta-arrow">→</span>
+          </a>
+        {%- endif -%}
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<style>
+  /* ============================================
+     EDITORIAL CAMPAIGN SECTION
+  ============================================ */
+  .editorial-campaign {
+    overflow: hidden;
+  }
+
+  .editorial-campaign__inner {
+    display: grid;
+    grid-template-columns: 60fr 40fr;
+    min-height: 80vh;
+    align-items: stretch;
+  }
+
+  /* Layout variations */
+  .editorial-campaign--media-right .editorial-campaign__inner {
+    grid-template-columns: 40fr 60fr;
+  }
+
+  .editorial-campaign--media-right .editorial-campaign__media { order: 2; }
+  .editorial-campaign--media-right .editorial-campaign__content { order: 1; }
+
+  .editorial-campaign--full-width .editorial-campaign__inner {
+    grid-template-columns: 1fr;
+    position: relative;
+    min-height: 90vh;
+  }
+
+  .editorial-campaign--full-width .editorial-campaign__image-wrap {
+    height: 90vh;
+  }
+
+  .editorial-campaign--full-width .editorial-campaign__content {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,0.28);
+    color: white;
+    text-align: center;
+    padding: 40px;
+  }
+
+  .editorial-campaign--full-width .editorial-campaign__title { color: white; }
+  .editorial-campaign--full-width .editorial-campaign__description { color: rgba(255,255,255,0.85); }
+  .editorial-campaign--full-width .editorial-campaign__collection-label { color: rgba(255,255,255,0.7); }
+
+  /* Media */
+  .editorial-campaign__image-wrap {
+    overflow: hidden;
+    height: 100%;
+    min-height: 600px;
+  }
+
+  .editorial-campaign__image-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 1.2s var(--ease-luxury);
+  }
+
+  .editorial-campaign__image-wrap:hover img {
+    transform: scale(1.04);
+  }
+
+  .editorial-campaign__placeholder {
+    background: var(--color-cream);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .editorial-campaign__placeholder .placeholder-svg {
+    width: 60%;
+    height: 60%;
+    opacity: 0.3;
+  }
+
+  /* Content */
+  .editorial-campaign__content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 80px 64px;
+  }
+
+  .editorial-campaign__collection-label {
+    font-family: var(--font-sans);
+    font-size: 9px;
+    font-weight: 400;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--color-mid-grey);
+    margin-bottom: 24px;
+  }
+
+  .editorial-campaign__title {
+    font-family: var(--font-serif);
+    font-size: clamp(36px, 4vw, 68px);
+    font-weight: 300;
+    line-height: 1.1;
+    margin-bottom: 28px;
+    color: var(--color-black);
+  }
+
+  .editorial-campaign__description {
+    font-family: var(--font-sans);
+    font-size: 13px;
+    font-weight: 300;
+    line-height: 1.9;
+    color: var(--color-text-muted);
+    max-width: 380px;
+    margin-bottom: 40px;
+  }
+
+  .editorial-campaign__ctas {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+  }
+
+  .editorial-campaign__secondary-cta {
+    font-family: var(--font-sans);
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: gap var(--transition-fast), color var(--transition-fast);
+  }
+
+  .editorial-campaign__secondary-cta:hover {
+    color: var(--color-black);
+    gap: 12px;
+    opacity: 1;
+  }
+
+  .cta-arrow {
+    transition: transform var(--transition-fast);
+  }
+
+  .editorial-campaign__secondary-cta:hover .cta-arrow {
+    transform: translateX(4px);
+  }
+
+  /* Responsive */
+  @media (max-width: 1024px) {
+    .editorial-campaign__inner {
+      grid-template-columns: 1fr !important;
+    }
+    .editorial-campaign__media,
+    .editorial-campaign__content { order: unset !important; }
+
+    .editorial-campaign__image-wrap { min-height: 70vw; }
+
+    .editorial-campaign__content {
+      padding: 56px 32px;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .editorial-campaign__image-wrap { min-height: 80vw; }
+    .editorial-campaign__content { padding: 40px 20px; }
+    .editorial-campaign__description { max-width: 100%; }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Editorial Campaign",
+  "tag": "section",
+  "settings": [
+    {"type":"select","id":"layout","label":"Layout","options":[
+      {"value":"media-left","label":"Image left, text right"},
+      {"value":"media-right","label":"Image right, text left"},
+      {"value":"full-width","label":"Full width with text overlay"}
+    ],"default":"media-left"},
+    {"type":"color","id":"background_color","label":"Background color","default":"#fafaf8"},
+    {"type":"image_picker","id":"image","label":"Campaign image"},
+    {"type":"text","id":"collection_label","label":"Label / Season","default":"New Collection"},
+    {"type":"text","id":"title","label":"Headline","default":"The Art of Craft"},
+    {"type":"textarea","id":"description","label":"Description","default":"A study in refined proportions and exceptional materials. Discover pieces conceived for those who understand that true luxury resides in the details."},
+    {"type":"text","id":"cta_label","label":"Primary button","default":"Shop the Collection"},
+    {"type":"url","id":"cta_url","label":"Primary button URL"},
+    {"type":"text","id":"cta_secondary_label","label":"Secondary link"},
+    {"type":"url","id":"cta_secondary_url","label":"Secondary link URL"}
+  ],
+  "presets": [{"name":"Editorial Campaign"}]
+}
+{% endschema %}

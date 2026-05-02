@@ -1,0 +1,80 @@
+{%- if section.settings.show_ticker -%}
+<div class="marquee-ticker" style="background:{{ section.settings.background }};color:{{ section.settings.text_color }};">
+  <div class="marquee-ticker__track" aria-hidden="true">
+    <div class="marquee-ticker__inner">
+      {%- for i in (1..6) -%}
+        <span class="marquee-ticker__item">{{ section.settings.text }}</span>
+        <span class="marquee-ticker__sep">&#10022;</span>
+      {%- endfor -%}
+    </div>
+    <div class="marquee-ticker__inner" aria-hidden="true">
+      {%- for i in (1..6) -%}
+        <span class="marquee-ticker__item">{{ section.settings.text }}</span>
+        <span class="marquee-ticker__sep">&#10022;</span>
+      {%- endfor -%}
+    </div>
+  </div>
+</div>
+{%- endif -%}
+
+<style>
+  .marquee-ticker {
+    overflow: hidden;
+    padding: 14px 0;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+
+  .marquee-ticker__track {
+    display: flex;
+    width: max-content;
+    animation: marquee 28s linear infinite;
+  }
+
+  .marquee-ticker__track:hover { animation-play-state: paused; }
+
+  .marquee-ticker__inner {
+    display: flex;
+    align-items: center;
+    gap: 0;
+  }
+
+  .marquee-ticker__item {
+    font-family: var(--font-sans);
+    font-size: 10px;
+    font-weight: 300;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    padding: 0 32px;
+  }
+
+  .marquee-ticker__sep {
+    font-size: 8px;
+    opacity: 0.5;
+    flex-shrink: 0;
+  }
+
+  @keyframes marquee {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .marquee-ticker__track { animation: none; }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Marquee Ticker",
+  "tag": "div",
+  "settings": [
+    {"type":"checkbox","id":"show_ticker","label":"Show ticker","default":true},
+    {"type":"text","id":"text","label":"Ticker text","default":"New Collection Available — Complimentary Shipping on All Orders — Exclusive Members Benefits"},
+    {"type":"color","id":"background","label":"Background color","default":"#0a0a0a"},
+    {"type":"color","id":"text_color","label":"Text color","default":"#b8a98a"}
+  ],
+  "presets": [{"name":"Marquee Ticker"}]
+}
+{% endschema %}
